@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diario con Árboles — General y Binario (ES6)</title>
+
+  <!-- Tailwind v4 (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Flowbite v4 (CDN) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+  <!-- Navbar -->
+  <nav class="border-b bg-white">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+      <div class="flex items-center gap-3">
+        <div class="grid h-9 w-9 place-items-center rounded-xl bg-gray-900 text-white font-bold">T</div>
+        <div>
+          <p class="text-sm font-semibold leading-tight">Diario con Árboles</p>
+          <p class="text-xs text-gray-500 leading-tight">Árbol general (n-ario) y árbol binario (ES6)</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="badgeGeneral" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">General: 0 nodos</span>
+        <span id="badgeBinary" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">Binario: 0 nodos</span>
+
+        <button id="btnSeed" type="button"
+          class="rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200">
+          Cargar ejemplo
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="mx-auto max-w-6xl px-4 py-8">
+    <div class="grid gap-6 lg:grid-cols-3">
+      <!-- Panel de entrada -->
+      <section class="lg:col-span-1">
+        <div class="rounded-2xl border bg-white p-5 shadow-sm">
+          <h1 class="text-lg font-bold">Nueva entrada</h1>
+          <p class="mt-1 text-sm text-gray-600">
+            Crea una entrada y elige cómo insertarla: como hijo en un árbol general o como nodo en un árbol binario.
+          </p>
+
+          <form id="entryForm" class="mt-5 space-y-4">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700" for="title">Título</label>
+              <input id="title" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-gray-900 focus:ring-gray-900"
+                maxlength="80" placeholder="Ej. 'Día 12: el bug fantasma'" required />
+              <p class="mt-1 text-xs text-gray-500">Máx. 80 caracteres.</p>
+            </div>
+
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700" for="mood">Emoción</label>
+              <select id="mood" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-gray-900 focus:ring-gray-900">
+                <option>Calma</option>
+                <option>Alegría</option>
+                <option>Estrés</option>
+                <option>Curiosidad</option>
+                <option>Cansancio</option>
+                <option>Inspiración</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700" for="content">Contenido</label>
+              <textarea id="content" rows="5"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm focus:border-gray-900 focus:ring-gray-900"
+                maxlength="600" placeholder="¿Qué pasó hoy?" required></textarea>
+              <div class="mt-1 flex items-center justify-between text-xs text-gray-500">
+                <span>Máx. 600 caracteres.</span>
+                <span id="charCount">0/600</span>
+              </div>
+            </div>
+
+            <div class="rounded-xl border bg-gray-50 p-4">
+              <p class="text-sm font-semibold text-gray-900">Inserción en Árbol General</p>
+              <p class="mt-1 text-xs text-gray-600">
+                El árbol general modela hilos: una entrada puede tener muchas respuestas (hijos).
+              </p>
+
+              <label class="mt-3 mb-1 block text-xs font-medium text-gray-700" for="generalParentId">
+                ID del padre (opcional)
+              </label>
+              <input id="generalParentId"
+                class="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm focus:border-gray-900 focus:ring-gray-900"
+                placeholder="Ej. g_... (si vacío, crea/usa raíz)" />
+
+              <button id="btnAddGeneral" type="button"
+                class="mt-3 w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200">
+                Agregar al Árbol General
+              </button>
+            </div>
+
+            <div class="rounded-xl border bg-gray-50 p-4">
+              <p class="text-sm font-semibold text-gray-900">Inserción en Árbol Binario</p>
+              <p class="mt-1 text-xs text-gray-600">
+                El árbol binario guarda nodos por una <span class="font-semibold">clave numérica</span> (key). Menor → izquierda, mayor → derecha.
+              </p>
+
+              <label class="mt-3 mb-1 block text-xs font-medium text-gray-700" for="binaryKey">
+                Key (número)
+              </label>
+              <input id="binaryKey" type="number"
+                class="block w-full rounded-lg border border-gray-300 bg-white p-2 text-sm focus:border-gray-900 focus:ring-gray-900"
+                placeholder="Ej. 42" required />
+
+              <button id="btnAddBinary" type="button"
+                class="mt-3 w-full rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200">
+                Insertar en Árbol Binario
+              </button>
+            </div>
+
+            <button id="btnReset" type="button"
+              class="w-full rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200">
+              Reiniciar todo
+            </button>
+          </form>
+        </div>
+
+        <div class="mt-6 rounded-2xl border bg-white p-5 shadow-sm">
+          <h2 class="text-sm font-bold text-gray-900">¿Qué deben aprender aquí?</h2>
+          <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-gray-700">
+            <li><span class="font-semibold">Árbol general:</span> un nodo puede tener <span class="font-semibold">N hijos</span> (lista de hijos).</li>
+            <li><span class="font-semibold">Árbol binario:</span> un nodo tiene máximo <span class="font-semibold">2 hijos</span> (left/right).</li>
+            <li><span class="font-semibold">Recorridos:</span> DFS (general) e in-order/pre/post (binario).</li>
+            <li><span class="font-semibold">Inserción:</span> reglas determinan la forma del árbol (en binario, según key).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Panel UI de árboles -->
+      <section class="lg:col-span-2">
+        <div class="rounded-2xl border bg-white p-5 shadow-sm">
+          <!-- Tabs (Flowbite) -->
+          <div class="border-b">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium" id="treeTabs" data-tabs-toggle="#treeTabsContent" role="tablist">
+              <li class="mr-2" role="presentation">
+                <button class="inline-block rounded-t-lg border-b-2 p-4" id="tab-general"
+                  data-tabs-target="#panel-general" type="button" role="tab" aria-controls="panel-general" aria-selected="true">
+                  🌿 Árbol General
+                </button>
+              </li>
+              <li class="mr-2" role="presentation">
+                <button class="inline-block rounded-t-lg border-b-2 p-4" id="tab-binary"
+                  data-tabs-target="#panel-binary" type="button" role="tab" aria-controls="panel-binary" aria-selected="false">
+                  🌳 Árbol Binario
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div id="treeTabsContent">
+            <!-- General -->
+            <div class="hidden pt-6" id="panel-general" role="tabpanel" aria-labelledby="tab-general">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 class="text-lg font-bold">Diario como Árbol General (N-ario)</h2>
+                  <p class="mt-1 text-sm text-gray-600">
+                    Cada entrada puede tener muchas respuestas (hijos). Ideal para modelar hilos.
+                  </p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button id="btnRenderGeneral" type="button"
+                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                    Render DFS
+                  </button>
+                </div>
+              </div>
+
+              <div id="generalEmpty" class="mt-6 rounded-xl border border-dashed p-6 text-center text-sm text-gray-600">
+                No hay nodos aún. Agrega una entrada al árbol general.
+              </div>
+
+              <div id="generalContainer" class="mt-6 space-y-3"></div>
+
+              <div class="mt-6 rounded-xl bg-gray-50 p-4 text-sm text-gray-700">
+                <p class="font-semibold">Tip didáctico:</p>
+                <p class="mt-1">
+                  Si agregas un <span class="font-semibold">ID de padre</span>, creas una “respuesta” a esa entrada, formando un hilo.
+                </p>
+              </div>
+            </div>
+
+            <!-- Binary -->
+            <div class="hidden pt-6" id="panel-binary" role="tabpanel" aria-labelledby="tab-binary">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 class="text-lg font-bold">Diario como Árbol Binario</h2>
+                  <p class="mt-1 text-sm text-gray-600">
+                    Inserción por <span class="font-semibold">key numérica</span>: menor a la izquierda, mayor a la derecha.
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <button id="btnRenderBinary" type="button"
+                    class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                    Render árbol
+                  </button>
+
+                  <button id="btnInOrder" type="button"
+                    class="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-200">
+                    In-order
+                  </button>
+
+                  <button id="btnPreOrder" type="button"
+                    class="rounded-lg bg-gray-900 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-800 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                    Pre-order
+                  </button>
+
+                  <button id="btnPostOrder" type="button"
+                    class="rounded-lg bg-gray-700 px-3 py-2 text-sm font-semibold text-white hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                    Post-order
+                  </button>
+                </div>
+              </div>
+
+              <div id="binaryEmpty" class="mt-6 rounded-xl border border-dashed p-6 text-center text-sm text-gray-600">
+                No hay nodos aún. Inserta entradas al árbol binario usando una key.
+              </div>
+
+              <div id="binaryContainer" class="mt-6 space-y-3"></div>
+
+              <div class="mt-6 rounded-xl bg-gray-50 p-4 text-sm text-gray-700">
+                <p class="font-semibold">¿Por qué importa el recorrido?</p>
+                <p class="mt-1">
+                  En un <span class="font-semibold">árbol binario de búsqueda (BST)</span>,
+                  el recorrido <span class="font-semibold">in-order</span> devuelve las keys ordenadas de menor a mayor.
+                </p>
+              </div>
+
+              <div class="mt-6">
+                <h3 class="text-sm font-bold text-gray-900">Salida del recorrido</h3>
+                <pre id="binaryTraversalOutput" class="mt-2 overflow-auto rounded-xl bg-gray-900 p-4 text-xs text-gray-100">(vacío)</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bitácora -->
+        <div class="mt-6 rounded-2xl border bg-white p-5 shadow-sm">
+          <h3 class="text-sm font-bold text-gray-900">Bitácora de operaciones</h3>
+          <p class="mt-1 text-sm text-gray-600">Muestra qué operación se ejecutó (útil para explicar inserción y recorridos).</p>
+          <div id="opsLog" class="mt-4 max-h-56 space-y-2 overflow-auto rounded-xl bg-gray-50 p-4 text-sm text-gray-700"></div>
+        </div>
+
+        <!-- Toast -->
+        <div class="fixed bottom-4 right-4 z-50 space-y-2">
+          <div id="toast"
+            class="hidden w-full max-w-xs items-center rounded-xl border bg-white p-4 text-gray-700 shadow-sm"
+            role="alert">
+            <div id="toastIcon" class="mr-3 inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100"></div>
+            <div class="text-sm font-medium"><span id="toastMsg">Mensaje</span></div>
+            <button type="button"
+              class="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              data-dismiss-target="#toast" aria-label="Close">
+              <span class="sr-only">Close</span>
+              <svg class="h-4 w-4" aria-hidden="true" fill="none" viewBox="0 0 14 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.5.2/flowbite.min.js"></script>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
